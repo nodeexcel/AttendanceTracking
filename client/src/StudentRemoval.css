@@ -42,7 +42,9 @@ button {
     transition: background-color 0.3s;
 }
 
-
+button:hover {
+    background-color: #c82333;
+}
 
 /* Student details section styling */
 h3 {
