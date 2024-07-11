@@ -55,9 +55,48 @@ app.post('/form/insert', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+app.get('/remove/getStudent/:registerNumber', async (req, res) => {
+  const registerNumber = req.params.registerNumber;
 
+  try {
+    const student = await StudentModel.findOne({ Register_number: registerNumber });
 
+    if (student) {
+      res.status(200).json(student);
+    } else {
+      res.status(404).send('Student not found');
+    }
+  } catch (error) {
+    console.error('Error fetching student details:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
+app.delete('/remove/delete/:registerNumber', async (req, res) => {
+  const registerNumber = req.params.registerNumber;
+  // console.log(registerNumber)
+
+  try {
+    // Find the student by register number and remove it
+    // const removedStudent = await StudentModel.findOneAndRemove({ Register_number: registerNumber });
+    const foundStudent = await StudentModel.findOne({ Register_number: registerNumber });
+      const studentId = foundStudent._id;
+
+      // Remove the student by ID
+    const removedStudent = await StudentModel.findByIdAndRemove(studentId);
+
+    if (removedStudent) {
+
+      res.status(200).send('Student removed successfully');
+    } else {
+
+      res.status(404).send('Student not found');
+    }
+  } catch (error) {
+    console.error('Error removing student:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 app.post('/attendance', (req, res) => {
   const attendanceData = req.body.attendanceData;
   //const date = new Date().setHours(0, 0, 0, 0); // Get the current date with time set to midnight
@@ -164,7 +203,15 @@ const csvHeader = [
     });
 });
 
-
+app.get('/read', async (req, res) => {
+    try {
+        const data = await StudentModel.find({});
+      res.send(data);
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
 
 app.get('/attendanceToday/:date', async (req, res) => {
   try {
